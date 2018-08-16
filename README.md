@@ -1,3 +1,2 @@
-# Santiment helm charts
+# helm-charts
 Santiment Helm charts repository
-
