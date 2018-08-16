@@ -23,7 +23,6 @@ spec:
       - name: "init-data"
         image: "{{ .Values.initimage.repository }}:{{ .Values.initimage.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
-#        command:  ["bash", "/opt/stellar/init-data.sh"]
         volumeMounts:
         - name: pv0001
           mountPath: /opt/stellar/
@@ -40,8 +39,6 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/init", "--", "/start", "--pubnet", "","" ]
           env: 
-#            - name: "PAGE_SIZE"
-#              value: "true"
             - name: "CATCHUP_COMPLETE"
               value: "true"
           volumeMounts:
