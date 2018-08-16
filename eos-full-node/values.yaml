@@ -17,9 +17,8 @@ image:
 
 service:
   type: ClusterIP
-  port1: 8888
-  type: ClusterIP
-  port2: 9876
+  internalPort: 8888
+  externalPort: 8888
 
 ingress:
   enabled: false

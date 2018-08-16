@@ -46,16 +46,16 @@ spec:
             - name: port-9876
               containerPort: 9876
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /v1/chain/get_info 
-              port: 8888
-              scheme: HTTP
-          readinessProbe:
-            httpGet:
-              path: /v1/chain/get_info 
-              port: 8888
-              scheme: HTTP
+#          livenessProbe:
+#            exec:
+#              command:
+#              - test
+#              - '`ps -ef | grep eos`'
+#          readinessProbe:
+#            httpGet:
+#              path: /v1/chain/get_info 
+#              port: 8888
+#              scheme: HTTP
           resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- with .Values.nodeSelector }}
