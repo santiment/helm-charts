@@ -38,7 +38,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/init", "--", "/start", "--pubnet", "","" ]
-          env: 
+          env:
             - name: "CATCHUP_COMPLETE"
               value: "true"
           volumeMounts:
@@ -82,7 +82,7 @@ spec:
       - name: {{ template "stellar-node.name" . }}
       {{- if .Values.persistence.enabled }}
         persistentVolumeClaim:
-          claimName: {{ template "stellar-node.name" . }} #{{ .Values.persistence.existingClaim | default (include "stellar-node.fullname" .) }}
+          claimName: {{ template "stellar-node.name" . }}
       {{- else }}
         emptyDir: {}
       {{- end }}
