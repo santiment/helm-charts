@@ -24,7 +24,7 @@ spec:
         image: "{{ .Values.initimage.repository }}:{{ .Values.initimage.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
         volumeMounts:
-        - name: {{ template "stellar-node.name" . }}
+        - name: {{ template "stellar-node.fullname" . }}
           mountPath: /opt/stellar/
           {{- if .Values.persistence.subPath }}
           subPath: {{ .Values.persistence.subPath }}
@@ -44,7 +44,7 @@ spec:
           volumeMounts:
           - name: runvol
             mountPath: /run
-          - name: {{ template "stellar-node.name" . }}
+          - name: {{ template "stellar-node.fullname" . }}
             mountPath: /opt/stellar
             {{- if .Values.persistence.subPath }}
             subPath: {{ .Values.persistence.subPath }}
@@ -79,10 +79,10 @@ spec:
       volumes:
       - name: runvol
         emptyDir: {}
-      - name: {{ template "stellar-node.name" . }}
+      - name: {{ template "stellar-node.fullname" . }}
       {{- if .Values.persistence.enabled }}
         persistentVolumeClaim:
-          claimName: {{ template "stellar-node.name" . }}
+          claimName: {{ template "stellar-node.fullname" . }}
       {{- else }}
         emptyDir: {}
       {{- end }}
