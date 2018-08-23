@@ -1,0 +1,88 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "stellar-node.fullname" . }}
+  labels:
+    app: {{ template "stellar-node.name" . }}
+    chart: {{ template "stellar-node.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "stellar-node.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "stellar-node.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      initContainers:
+      - name: "init-data"
+        image: "{{ .Values.initimage.repository }}:{{ .Values.initimage.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+        volumeMounts:
+        - name: pv0001
+          mountPath: /opt/stellar/
+          {{- if .Values.persistence.subPath }}
+          subPath: {{ .Values.persistence.subPath }}
+          {{- end }}
+      {{- if .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/init", "--", "/start", "--pubnet", "","" ]
+          env: 
+            - name: "CATCHUP_COMPLETE"
+              value: "true"
+          volumeMounts:
+          - name: runvol
+            mountPath: /run
+          - name: pv0001
+            mountPath: /opt/stellar
+            {{- if .Values.persistence.subPath }}
+            subPath: {{ .Values.persistence.subPath }}
+            {{- end }}
+          ports:
+            - name: postgresql
+              containerPort: 5432
+              protocol: TCP
+            - name: horizon
+              containerPort: 8000
+              protocol: TCP
+            - name: stellar-core-1
+              containerPort: 11625
+              protocol: TCP
+            - name: stellar-core-2
+              containerPort: 11626
+              protocol: TCP
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+      volumes:
+      - name: runvol
+        emptyDir: {}
+      - name: pv0001
+      {{- if .Values.persistence.enabled }}
+        persistentVolumeClaim:
+          claimName: pv0001 #{{ .Values.persistence.existingClaim | default (include "stellar-node.fullname" .) }}
+      {{- else }}
+        emptyDir: {}
+      {{- end }}
