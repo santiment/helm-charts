@@ -51,7 +51,7 @@ spec:
       - name: data
       {{- if .Values.persistence.enabled }}
         persistentVolumeClaim:
-          claimName: cardano-data #{{ .Values.persistence.existingClaim | default (include "stellar-node.fullname" .) }}
+          claimName: {{ .Values.persistence.existingClaim | default (include "stellar-node.fullname" .) }}
       {{- else }}
         emptyDir: {}
       {{- end }}
